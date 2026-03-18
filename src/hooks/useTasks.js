@@ -117,6 +117,8 @@ export function useTasks(userId) {
       }
 
       await queryClient.invalidateQueries({ queryKey: ['today-state', userId] });
+      queryClient.invalidateQueries({ queryKey: ['progress', userId] });
+      queryClient.invalidateQueries({ queryKey: ['streak', userId] });
     },
     onError: (error) => {
       pushToast({ title: error.message || 'Unable to save your progress', variant: 'error' });

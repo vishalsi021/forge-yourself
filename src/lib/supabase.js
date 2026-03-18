@@ -14,7 +14,7 @@ let activeSessionKey = '';
 
 export const supabase = createClient(supabaseUrl ?? 'https://example.supabase.co', supabaseAnonKey ?? 'demo-key', {
   auth: {
-    persistSession: useBrowserAuthFallback,
+    persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: useBrowserAuthFallback,
     flowType: 'pkce',
