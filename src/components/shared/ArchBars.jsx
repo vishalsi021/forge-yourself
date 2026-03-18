@@ -1,4 +1,4 @@
-﻿import { motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const toneMap = {
   fitness: '#FF6B35',
@@ -10,10 +10,20 @@ const toneMap = {
 };
 
 export function ArchBars({ scores = {} }) {
+  const entries = Object.entries(scores).filter(([key]) => key !== 'wealth');
+  const hasAnyScore = entries.some(([, value]) => value > 0);
+
+  if (!entries.length || !hasAnyScore) {
+    return (
+      <div className="py-4 text-center text-sm text-forge-muted2">
+        Complete tasks to see your dimension breakdown.
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
-      {Object.entries(scores)
-        .filter(([key]) => key !== 'wealth')
+      {entries
         .map(([key, value], index) => {
           const percent = Math.round((value / 10) * 100);
           return (

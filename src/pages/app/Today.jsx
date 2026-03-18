@@ -248,12 +248,7 @@ export default function TodayPage() {
   const tasks = sortTasksForDisplay(offlineFallbackMode ? (fallbackDraft?.tasks || activeDailyLog.tasks || []) : (activeDailyLog.tasks || []));
   const completedCount = tasks.filter((task) => task.done).length;
   const dayPercent = Math.round((completedCount / Math.max(tasks.length, 1)) * 100);
-  
-  // Calculate completion based on average total tasks multiplied by 60
-  const baselineTotalTasks = Math.max(tasks.length, 15) * 60;
-  const historicTotalDone = Math.max(0, activeStreak.total_xp / 20); // Rough approximation: XP / ~20avg per task
-  const estimatedTotalDone = historicTotalDone + completedCount;
-  const completionPercent = Math.min(100, Math.round((estimatedTotalDone / baselineTotalTasks) * 100));
+  const journeyDayPercent = Math.min(100, Math.round((activeStreak.current_day / 60) * 100));
   
   const wisdom = wisdomQuotes[(activeStreak.current_day - 1) % wisdomQuotes.length];
   const archScores = profile?.arch_scores || profile?.quiz_answers?.analysis?.archScores || {};
@@ -353,7 +348,7 @@ export default function TodayPage() {
     const statHeight = 160;
     const statGap = 24;
     const statWidth = (photoWidth - (statGap * 2)) / 3;
-    const journeyProgress = completionPercent / 100;
+    const journeyProgress = journeyDayPercent / 100;
 
     ctx.fillStyle = '#090b10';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -414,7 +409,7 @@ export default function TodayPage() {
     ctx.fillStyle = '#f2c94c';
     ctx.textAlign = 'left';
     ctx.font = '700 192px "Barlow Condensed", sans-serif';
-    ctx.fillText(`${completionPercent}%`, photoX + 36, photoY + photoHeight - 80);
+    ctx.fillText(`${dayPercent}%`, photoX + 36, photoY + photoHeight - 80);
 
     ctx.fillStyle = '#ffffff';
     ctx.font = '700 36px "Barlow Condensed", sans-serif';
@@ -479,7 +474,7 @@ export default function TodayPage() {
       if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [shareFile] }))) {
         await navigator.share({
           title: 'FORGE Day Card',
-          text: `${identityName} - Day ${activeStreak.current_day} - ${completionPercent}% complete`,
+          text: `${identityName} - Day ${activeStreak.current_day} - ${dayPercent}% today`,
           files: [shareFile],
         });
       } else {
@@ -513,8 +508,8 @@ export default function TodayPage() {
           </Button>
 
           <div className="absolute bottom-4 left-4">
-            <div className="font-display text-7xl leading-none text-forge-gold">{completionPercent}%</div>
-            <div className="mt-2 font-condensed text-xs font-bold uppercase tracking-[0.2em] text-white/85">{identityName} - Day {activeStreak.current_day}</div>
+            <div className="font-display text-7xl leading-none text-forge-gold">{dayPercent}%</div>
+            <div className="mt-2 font-condensed text-xs font-bold uppercase tracking-[0.2em] text-white/85">{identityName} - Day {activeStreak.current_day} of 60</div>
           </div>
         </div>
       </Card>
