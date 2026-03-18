@@ -98,6 +98,7 @@ export function useTasks(userId) {
       return claudeApi.ensureDayState({ action: 'save', ...payload });
     },
     onSuccess: async (data, variables) => {
+      console.log('[useTasks] save SUCCESS:', data?.dailyLog ? `logId=${data.dailyLog.id}` : 'no dailyLog in response');
       queryClient.setQueryData(['today-state', userId], (current) => {
         const nextState = data?.dailyLog ? data : {
           ...(current ?? {}),
@@ -121,6 +122,7 @@ export function useTasks(userId) {
       queryClient.invalidateQueries({ queryKey: ['streak', userId] });
     },
     onError: (error) => {
+      console.error('[useTasks] save FAILED:', error);
       pushToast({ title: error.message || 'Unable to save your progress', variant: 'error' });
     },
   });

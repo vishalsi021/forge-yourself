@@ -13,14 +13,21 @@ import { claudeApi } from '@/lib/claude';
 import { supabase } from '@/lib/supabase';
 
 async function fetchProgress(userId) {
+  // Debug: check if supabase client has a session
+  const { data: { session } } = await supabase.auth.getSession();
+  console.log('[Progress] auth session:', session ? `yes (uid=${session.user?.id})` : 'NO SESSION');
+  console.log('[Progress] fetching for userId:', userId);
+
   const { data: dailyLogs, error: logsError } = await supabase
     .from('daily_logs')
     .select('*')
     .eq('user_id', userId)
     .order('day_number', { ascending: true });
+  console.log('[Progress] daily_logs:', dailyLogs?.length ?? 0, 'rows, error:', logsError);
   if (logsError) throw logsError;
 
   const { data: streak, error: streakError } = await supabase.from('streaks').select('*').eq('user_id', userId).single();
+  console.log('[Progress] streak:', streak ? `day=${streak.current_day}, xp=${streak.total_xp}` : 'null', 'error:', streakError);
   if (streakError) throw streakError;
 
   const { data: reviews, error: reviewsError } = await supabase

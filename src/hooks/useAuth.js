@@ -42,7 +42,8 @@ export function useAuth({ skipSession = false } = {}) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[useAuth] onAuthStateChange:', event, 'hasSession:', !!session);
       queryClient.invalidateQueries({ queryKey: ['auth-state'] });
 
       if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
