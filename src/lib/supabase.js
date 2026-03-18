@@ -20,11 +20,6 @@ export const supabase = createClient(supabaseUrl ?? 'https://example.supabase.co
     flowType: 'pkce',
     ...(useBrowserAuthFallback ? { storage: cookieStorage } : {}),
   },
-  global: {
-    headers: {
-      'x-forge-client': 'web-app',
-    },
-  },
 });
 
 export async function bootstrapSupabaseSession(session) {
