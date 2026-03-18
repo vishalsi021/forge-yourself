@@ -1,0 +1,101 @@
+@import '@fontsource/bebas-neue/latin-400.css';
+@import '@fontsource/barlow/latin-300.css';
+@import '@fontsource/barlow/latin-400.css';
+@import '@fontsource/barlow/latin-500.css';
+@import '@fontsource/barlow/latin-600.css';
+@import '@fontsource/barlow-condensed/latin-500.css';
+@import '@fontsource/barlow-condensed/latin-600.css';
+@import '@fontsource/barlow-condensed/latin-700.css';
+@import '@fontsource/barlow-condensed/latin-800.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    @apply scroll-smooth bg-forge-bg;
+  }
+
+  body {
+    @apply min-h-screen bg-forge-bg font-body text-sm text-forge-text antialiased;
+    background-image:
+      radial-gradient(circle at top center, rgba(255, 215, 0, 0.08), transparent 34%),
+      linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: auto, 48px 48px, 48px 48px;
+    background-position: center top, center center, center center;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  * {
+    @apply border-forge-border;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: rgba(255, 215, 0, 0.2);
+    color: #f0ede8;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+@layer components {
+  .app-shell {
+    @apply relative mx-auto w-full max-w-app;
+  }
+
+  .surface {
+    @apply border border-forge-border bg-forge-bg2;
+  }
+
+  .surface-alt {
+    @apply border border-forge-border bg-forge-bg3;
+  }
+
+  .section-label {
+    @apply font-condensed text-[0.7rem] font-bold uppercase tracking-[0.32em] text-forge-muted2;
+  }
+
+  .display-title {
+    @apply font-display uppercase tracking-[0.08em] text-forge-text;
+  }
+
+  .loading-screen-bar {
+    animation: loading-screen-sweep 1.15s linear infinite;
+  }
+}
+
+@keyframes loading-screen-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}

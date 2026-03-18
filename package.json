@@ -1,0 +1,55 @@
+{
+  "name": "forge-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "vite",
+    "dev:vercel": "vercel dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src api --ext .js,.jsx",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@fontsource/barlow": "^5.1.1",
+    "@fontsource/barlow-condensed": "^5.1.1",
+    "@fontsource/bebas-neue": "^5.1.1",
+    "@hookform/resolvers": "^3.10.0",
+    "@sentry/react": "^9.6.0",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.49.1",
+    "@tanstack/react-query": "^5.66.9",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.4.7",
+    "idb": "^8.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.54.2",
+    "react-router-dom": "^6.30.0",
+    "zustand": "^5.0.3",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.21.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
+    "jsdom": "^26.0.0",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
+    "vercel": "^39.4.0",
+    "vite": "^6.2.0",
+    "vitest": "^3.0.8"
+  }
+}
