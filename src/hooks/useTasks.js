@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { enqueueMutation, flushMutationQueue, registerBackgroundSync, registerQueueHandler } from '@/lib/offlineQueue';
 import { claudeApi } from '@/lib/claude';
+import { saveDayCache, loadDayCache } from '@/lib/dayCache';
 import { useTasksStore } from '@/stores/tasksStore';
 import { useUiStore } from '@/stores/uiStore';
 import { getComboLabel, getLevelFromXp } from '@/utils/xp';
@@ -72,7 +73,18 @@ export function useTasks(userId) {
   const todayQuery = useQuery({
     queryKey: ['today-state', userId],
     enabled: Boolean(userId),
-    queryFn: () => claudeApi.ensureDayState({ action: 'get' }),
+    queryFn: async () => {
+      try {
+        const data = await claudeApi.ensureDayState({ action: 'get' });
+        saveDayCache(userId, data);
+        return data;
+      } catch (err) {
+        const cached = loadDayCache(userId);
+        if (cached) return cached;
+        throw err;
+      }
+    },
+    initialData: () => loadDayCache(userId) || undefined,
   });
 
   const saveMutation = useMutation({
@@ -87,11 +99,12 @@ export function useTasks(userId) {
     },
     onSuccess: async (data, variables) => {
       queryClient.setQueryData(['today-state', userId], (current) => {
-        if (data?.dailyLog) return data;
-        return {
+        const nextState = data?.dailyLog ? data : {
           ...(current ?? {}),
           ...(variables.optimistic ?? {}),
         };
+        saveDayCache(userId, nextState);
+        return nextState;
       });
 
       const completedCount = data?.dailyLog?.tasks?.filter((task) => task.done).length ?? 0;
@@ -122,7 +135,7 @@ export function useTasks(userId) {
     const identityName = getIdentityName(current?.profile);
 
     setLastCompletedTaskId(taskId);
-    pushToast({ title: `+${doneTask?.xp ?? 0} XP — ${identityName} expected this`, variant: 'success' });
+    pushToast({ title: `+${doneTask?.xp ?? 0} XP ï¿½ ${identityName} expected this`, variant: 'success' });
 
     await saveMutation.mutateAsync({
       dailyLogId: current.dailyLog.id,
