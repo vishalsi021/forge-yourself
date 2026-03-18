@@ -251,6 +251,33 @@ export default function TodayPage() {
   const completionPercent = getCompletionPercent(activeStreak.current_day);
   const wisdom = wisdomQuotes[(activeStreak.current_day - 1) % wisdomQuotes.length];
   const archScores = profile?.arch_scores || profile?.quiz_answers?.analysis?.archScores || {};
+
+  const dynamicArchScores = useMemo(() => {
+    const scores = { mind: 0, career: 0, habits: 0, social: 0, fitness: 0, purpose: 0 };
+    const totals = { mind: 0, career: 0, habits: 0, social: 0, fitness: 0, purpose: 0 };
+
+    tasks.forEach((task) => {
+      const mappedArea = task.area === 'custom' ? 'habits' : (task.area || 'purpose');
+      if (totals[mappedArea] !== undefined) {
+        totals[mappedArea] += 1;
+        if (task.done) {
+          scores[mappedArea] += 1;
+        }
+      }
+    });
+
+    const normalizedScores = {};
+    Object.keys(scores).forEach((area) => {
+      if (totals[area] > 0) {
+        normalizedScores[area] = (scores[area] / totals[area]) * 10;
+      } else {
+        normalizedScores[area] = archScores[area] || 0;
+      }
+    });
+    
+    return normalizedScores;
+  }, [tasks, archScores]);
+
   const shouldShowAlert = activeStreak.current_day > 2 && tasks.length - completedCount > 12;
   const mostSkipped = tasks.find((task) => !task.done)?.text;
   const currentRating = offlineFallbackMode ? (fallbackDraft?.dayRating ?? activeDailyLog.day_rating ?? 0) : (activeDailyLog.day_rating || 0);
@@ -525,8 +552,10 @@ export default function TodayPage() {
       </Card>
 
       <Card className="mt-4 p-5">
-        <div className="section-label mb-3">6 dimensions</div>
-        <ArchBars scores={archScores} />
+        <div className="flex items-center justify-between mb-3">
+          <div className="section-label">6 dimensions (Live)</div>
+        </div>
+        <ArchBars scores={dynamicArchScores} />
       </Card>
 
       {shouldShowAlert ? (
