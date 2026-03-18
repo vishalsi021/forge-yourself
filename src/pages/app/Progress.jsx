@@ -87,6 +87,7 @@ export default function ProgressPage() {
     queryKey: ['progress', user?.id],
     enabled: Boolean(user?.id),
     queryFn: () => fetchProgress(user.id),
+    staleTime: 0,
   });
 
   const missedPatternQuery = useQuery({

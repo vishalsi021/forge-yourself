@@ -42,8 +42,14 @@ export function useAuth({ skipSession = false } = {}) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
+    } = supabase.auth.onAuthStateChange((event) => {
       queryClient.invalidateQueries({ queryKey: ['auth-state'] });
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+        queryClient.invalidateQueries({ queryKey: ['today-state'] });
+        queryClient.invalidateQueries({ queryKey: ['progress'] });
+        queryClient.invalidateQueries({ queryKey: ['streak'] });
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -74,6 +80,9 @@ export function useAuth({ skipSession = false } = {}) {
     mutationFn: authApi.signOut,
     onSuccess: async () => {
       clearAuthState();
+      queryClient.removeQueries({ queryKey: ['today-state'] });
+      queryClient.removeQueries({ queryKey: ['progress'] });
+      queryClient.removeQueries({ queryKey: ['streak'] });
       await queryClient.invalidateQueries({ queryKey: ['auth-state'] });
     },
     onError: (error) => {
