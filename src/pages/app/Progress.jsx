@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { PageWrapper } from '@/components/layout/PageWrapper';
@@ -63,11 +63,17 @@ export default function ProgressPage() {
     const tasks = dailyLogs.flatMap((log) => log.tasks || []);
     const doneTasks = tasks.filter((task) => task.done).length;
     const avgRating = dailyLogs.filter((log) => log.day_rating).reduce((sum, log, _, array) => sum + log.day_rating / array.length, 0);
+    
+    // Calculate total possible tasks for 60 days based on the average tasks per tracked day, 
+    // or fallback to a baseline of 15 tasks per day if no data yet.
+    const avgTasksPerDay = dailyLogs.length > 0 ? (tasks.length / dailyLogs.length) : 15;
+    const expectedTotalTasks60Days = Math.round(avgTasksPerDay * 60);
+
     return {
       dailyLogs,
       totalTasks: tasks.length,
       doneTasks,
-      completion: tasks.length ? Math.round((doneTasks / tasks.length) * 100) : 0,
+      completion: expectedTotalTasks60Days > 0 ? Math.round((doneTasks / expectedTotalTasks60Days) * 100) : 0,
       avgRating: avgRating ? avgRating.toFixed(1) : '—',
     };
   }, [progressQuery.data?.dailyLogs]);

@@ -248,7 +248,13 @@ export default function TodayPage() {
   const tasks = sortTasksForDisplay(offlineFallbackMode ? (fallbackDraft?.tasks || activeDailyLog.tasks || []) : (activeDailyLog.tasks || []));
   const completedCount = tasks.filter((task) => task.done).length;
   const dayPercent = Math.round((completedCount / Math.max(tasks.length, 1)) * 100);
-  const completionPercent = getCompletionPercent(activeStreak.current_day);
+  
+  // Calculate completion based on average total tasks multiplied by 60
+  const baselineTotalTasks = Math.max(tasks.length, 15) * 60;
+  const historicTotalDone = Math.max(0, activeStreak.total_xp / 20); // Rough approximation: XP / ~20avg per task
+  const estimatedTotalDone = historicTotalDone + completedCount;
+  const completionPercent = Math.min(100, Math.round((estimatedTotalDone / baselineTotalTasks) * 100));
+  
   const wisdom = wisdomQuotes[(activeStreak.current_day - 1) % wisdomQuotes.length];
   const archScores = profile?.arch_scores || profile?.quiz_answers?.analysis?.archScores || {};
 
@@ -347,7 +353,7 @@ export default function TodayPage() {
     const statHeight = 160;
     const statGap = 24;
     const statWidth = (photoWidth - (statGap * 2)) / 3;
-    const journeyProgress = Math.max(0, Math.min(1, activeStreak.current_day / 60));
+    const journeyProgress = completionPercent / 100;
 
     ctx.fillStyle = '#090b10';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
